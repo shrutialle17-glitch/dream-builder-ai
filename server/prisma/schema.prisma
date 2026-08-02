@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt  DateTime      @updatedAt
+  projects   Project[]
+  activities ActivityLog[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Project {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  name          String
+  description   String?
+  industry      String?
+  startupStage  String?
+  status        String   @default("DRAFT")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  activities    ActivityLog[]
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action      String   // e.g., "PROJECT_CREATED", "PROJECT_UPDATED", "LOGGED_IN"
+  entityType  String?  // e.g., "PROJECT"
+  entityId    String?  // e.g., projectId
+  details     String?  // extra info, maybe stringified JSON or plain text
+  createdAt   DateTime @default(now())
+  
+  // Optional relations for tight coupling, but loose entityId is often better for generic logs
+  project     Project? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+}

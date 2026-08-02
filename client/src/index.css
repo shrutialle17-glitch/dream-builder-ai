@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-sidebar: var(--sidebar);
+  
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Sora', sans-serif;
+}
+
+:root {
+  --background: #F8FAFC;
+  --surface: #FFFFFF;
+  --sidebar: #F1F5F9;
+  --primary: #0891B2;
+  --secondary: #F59E0B;
+  --success: #16A34A;
+  --warning: #D97706;
+  --danger: #DC2626;
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --border: #E2E8F0;
+}
+
+html[data-theme='dark'] {
+  --background: #0B0F14;
+  --surface: #151B23;
+  --sidebar: #10151D;
+  --primary: #00B8D9;
+  --secondary: #FF8A00;
+  --success: #22C55E;
+  --warning: #FBBF24;
+  --danger: #EF4444;
+  --text-primary: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --border: #252B36;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
