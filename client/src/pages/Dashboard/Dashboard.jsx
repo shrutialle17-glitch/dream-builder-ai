@@ -1,10 +1,13 @@
 //import { useAuth } from '../../context/AuthContext';
 import { useProjects } from '../../hooks/useProjectQueries';
+import { useActivities } from '../../hooks/useActivityQueries';
 import { useNavigate } from 'react-router-dom';
-import { Clock, FolderKanban, Activity, Zap } from 'lucide-react';
+import { Clock, FolderKanban, Activity, Zap, FolderOpen } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import Card, { CardBody, CardHeader } from '../../components/ui/Card';
 import Skeleton from '../../components/ui/Skeleton';
+import Badge from '../../components/ui/Badge';
+import EmptyState from '../../components/ui/EmptyState';
 export default function Dashboard() {
   //const { user } = useAuth();
   const user = {
@@ -12,10 +15,12 @@ export default function Dashboard() {
   };
   const navigate = useNavigate();
   const { data: projectData, isLoading: isProjectsLoading } = useProjects({ limit: 5 });
+  const { data: activityData, isLoading: isActivitiesLoading } = useActivities({ limit: 5 });
+
   const totalProjects = projectData?.total || 0;
   const recentProjects = projectData?.projects || [];
+  const recentActivities = activityData?.activities || [];
   const activeProjects = recentProjects.filter(p => p.status === 'ACTIVE').length || 0;
-  
 
   return (
     <div className="space-y-6">
@@ -82,6 +87,79 @@ export default function Dashboard() {
             </div>
           </CardBody>
         </Card>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Projects */}
+        <Card className="lg:col-span-2 flex flex-col">
+          <CardHeader title="Recent Projects" />
+          <CardBody className="p-0 flex-1 flex flex-col">
+            {isProjectsLoading ? (
+              <div className="p-6 space-y-4">
+                {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+              </div>
+            ) : recentProjects.length === 0 ? (
+              <div className="p-8 flex-1 flex flex-col justify-center">
+                <EmptyState 
+                  icon={<FolderOpen size={40} className="text-text-secondary mb-2" />}
+                  title="No projects yet"
+                  description="Create a project to start building your startup."
+                  action={{ label: 'Create your first project', onClick: () => navigate('/projects?new=true') }}
+                />
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {recentProjects.map(project => (
+                  <div key={project.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-background/50 transition-colors gap-4">
+                    <div>
+                      <h4 className="font-medium text-text-primary hover:text-primary cursor-pointer transition-colors">{project.name}</h4>
+                      <p className="text-sm text-text-secondary mt-1 line-clamp-1">{project.description || 'No description'}</p>
+                    </div>
+                    <div className="flex items-center gap-4 whitespace-nowrap">
+                      <Badge variant={project.status === 'ACTIVE' ? 'success' : 'default'}>{project.status}</Badge>
+                      <span className="text-xs text-text-secondary flex items-center gap-1">
+                        <Clock size={12} />
+                        {new Date(project.updatedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardBody>
+        </Card>
+        <div className="space-y-6">
+         <Card>
+            <CardHeader title="Recent Activity" />
+            <CardBody className="p-0">
+              {isActivitiesLoading ? (
+                <div className="p-4 space-y-4">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-10 w-full" />)}
+                </div>
+              ) : recentActivities.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <div className="p-3 bg-background rounded-full text-text-secondary mb-3">
+                    <Activity size={20} />
+                  </div>
+                  <p className="text-sm text-text-secondary">No recent activity.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {recentActivities.map(activity => (
+                    <div key={activity.id} className="p-4 hover:bg-background/50 transition-colors flex gap-3">
+                      <div className="mt-1">
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-text-primary">{activity.details}</p>
+                        <p className="text-xs text-text-secondary mt-1">{new Date(activity.createdAt).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </div>
   );
