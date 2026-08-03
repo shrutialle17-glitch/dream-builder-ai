@@ -14,9 +14,10 @@ export default function ProtectedRoute() {
     );
   }
 
-  if (!isAuthenticated) {
+ if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+
 
   return <Outlet />;
 }

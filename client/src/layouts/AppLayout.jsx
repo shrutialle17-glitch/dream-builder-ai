@@ -60,7 +60,7 @@ export default function AppLayout() {
               <span className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
             </button>
             <div className="w-px h-6 bg-border mx-2 hidden sm:block"></div>
-            <UserProfileDropdown />
+            {/* <UserProfileDropdown /> */}
           </div>
         </header>
 
