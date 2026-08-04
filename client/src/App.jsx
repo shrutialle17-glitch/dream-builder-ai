@@ -9,6 +9,7 @@ import ErrorBoundary from './components/ui/ErrorBoundary';
 import AppLayout from './layouts/AppLayout';
 import Landing from './pages/Landing/Landing';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Settings from './pages/Settings/Settings';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,13 +30,14 @@ function App() {
             <Route element={<PublicRoute />}>
               <Route path="/" element={<Landing />} />
             </Route>
-              <Route element={<AppLayout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-              </Route>
+            <Route element={<AppLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
           </Routes>
         </BrowserRouter>
         <Toaster theme="system" />
-    </QueryClientProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }
