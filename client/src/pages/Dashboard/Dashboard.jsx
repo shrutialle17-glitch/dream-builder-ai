@@ -1,13 +1,14 @@
 //import { useAuth } from '../../context/AuthContext';
 import { useProjects } from '../../hooks/useProjectQueries';
 import { useActivities } from '../../hooks/useActivityQueries';
-import { useNavigate } from 'react-router-dom';
-import { Clock, FolderKanban, Activity, Zap, FolderOpen } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Clock, FolderKanban, Activity, Zap, FolderOpen, Plus, LayoutDashboard, ArrowRight } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import Card, { CardBody, CardHeader } from '../../components/ui/Card';
 import Skeleton from '../../components/ui/Skeleton';
 import Badge from '../../components/ui/Badge';
 import EmptyState from '../../components/ui/EmptyState';
+import Button from '../../components/ui/Button';
 export default function Dashboard() {
   //const { user } = useAuth();
   const user = {
@@ -73,7 +74,7 @@ export default function Dashboard() {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="hover:border-primary/50 transition-colors">
           <CardBody className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
@@ -99,7 +100,7 @@ export default function Dashboard() {
               </div>
             ) : recentProjects.length === 0 ? (
               <div className="p-8 flex-1 flex flex-col justify-center">
-                <EmptyState 
+                <EmptyState
                   icon={<FolderOpen size={40} className="text-text-secondary mb-2" />}
                   title="No projects yet"
                   description="Create a project to start building your startup."
@@ -127,8 +128,40 @@ export default function Dashboard() {
             )}
           </CardBody>
         </Card>
+
         <div className="space-y-6">
-         <Card>
+          <Card>
+            <CardHeader title="Quick Actions" />
+            <CardBody className="space-y-3">
+              <button
+                onClick={() => navigate('/projects?new=true')}
+                className="w-full flex items-center justify-between p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                    <Plus size={18} />
+                  </div>
+                  <span className="font-medium text-text-primary group-hover:text-primary transition-colors">New Project</span>
+                </div>
+                <ArrowRight size={16} className="text-text-secondary group-hover:text-primary transition-colors" />
+              </button>
+
+              <Link
+                to="/projects"
+                className="w-full flex items-center justify-between p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-background rounded-lg text-text-primary">
+                    <LayoutDashboard size={18} />
+                  </div>
+                  <span className="font-medium text-text-primary transition-colors">View All Projects</span>
+                </div>
+                <ArrowRight size={16} className="text-text-secondary transition-colors" />
+              </Link>
+            </CardBody>
+          </Card>
+
+          <Card>
             <CardHeader title="Recent Activity" />
             <CardBody className="p-0">
               {isActivitiesLoading ? (
