@@ -10,6 +10,7 @@ import AppLayout from './layouts/AppLayout';
 import Landing from './pages/Landing/Landing';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Settings from './pages/Settings/Settings';
+import Projects from './pages/Projects/Projects';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +34,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/projects" element={<Projects />} />
             </Route>
           </Routes>
         </BrowserRouter>
