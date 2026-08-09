@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.routes.js';
+import projectRoutes from './routes/project.routes.js';
+import activityRoutes from './routes/activity.routes.js';
 
 dotenv.config();
 
@@ -21,8 +23,8 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 app.use(limiter);
 
@@ -36,6 +38,8 @@ app.use(morgan('dev'));
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/activities', activityRoutes);
 
 // 404 handler
 app.use((req, res, next) => {
