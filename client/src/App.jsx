@@ -3,15 +3,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import PublicRoute from "./components/common/PublicRoute";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
-import ProtectedRoute from "./components/common/ProtectedRoute";
 
 import AppLayout from "./layouts/AppLayout";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
-
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Settings from "./pages/Settings/Settings";
+import Projects from "./pages/Projects/Projects";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,11 +44,12 @@ function App() {
               <Route path="/" element={<Landing />} />
 
               <Route element={<ProtectedRoute />}>
-              <Route element={<AppLayout />}>
-                
-               
+                <Route element={<AppLayout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
               </Route>
-            </Route>
             </Routes>
           </BrowserRouter>
           <Toaster theme="system" />

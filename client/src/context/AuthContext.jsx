@@ -36,6 +36,7 @@ export function AuthProvider({ children }) {
     isLoading: isInitializing,
     refetchUser: refetch,
   };
+  
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
