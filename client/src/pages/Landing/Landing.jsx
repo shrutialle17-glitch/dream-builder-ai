@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import ThemeToggle from '../../components/common/ThemeToggle';
-//import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 import HeroSection from './components/HeroSection';
 import JourneySection from './components/JourneySection';
@@ -11,8 +11,7 @@ import ComparisonSection from './components/ComparisonSection';
 import RoadmapSection from './components/RoadmapSection';
 
 export default function Landing() {
-  //const { isAuthenticated } = useAuth();
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30">
@@ -20,7 +19,7 @@ export default function Landing() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/assests/images/logo.png" alt="Dream Builder AI" className="h-10 w-auto object-contain" />
+            <img src="/assets/images/logo.png" alt="Dream Builder AI" className="h-10 w-auto object-contain" />
             <span className="font-display font-bold text-xl text-text-primary tracking-tight">Dream Builder AI</span>
           </div>
           <div className="flex items-center gap-4">
@@ -70,7 +69,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src="/assests/images/logo.png" alt="Dream Builder AI" className="h-10 w-auto object-contain" />
+              <img src="/assets/images/logo.png" alt="Dream Builder AI" className="h-10 w-auto object-contain" />
               <span className="font-display font-bold text-xl text-text-primary tracking-tight">Dream Builder AI</span>
             </div>
             <p className="text-text-secondary text-sm">The world's first AI Startup Operating System.</p>

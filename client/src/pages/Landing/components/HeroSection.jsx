@@ -9,8 +9,7 @@ const steps = [
 ];
 
 export default function HeroSection() {
-  //const { isAuthenticated } = useAuth();
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAuth();
 
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 px-6 overflow-hidden">
@@ -18,7 +17,7 @@ export default function HeroSection() {
       <div 
         className="absolute inset-0 z-0 opacity-20 pointer-events-none mix-blend-screen"
         style={{
-          backgroundImage: 'url(/assests/images/hero-bg.png)',
+          backgroundImage: 'url(/assets/images/hero-bg.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

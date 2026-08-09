@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, Settings as SettingsIcon, Menu } from 'lucide-react';
 import ThemeToggle from '../components/common/ThemeToggle';
-//import UserProfileDropdown from '../components/common/UserProfileDropdown';
+import UserProfileDropdown from '../components/common/UserProfileDropdown';
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,7 +14,7 @@ export default function AppLayout() {
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-sidebar border-r border-border transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-start gap-3 h-16 border-b border-border px-6 py-2">
-          <img src="/assests/images/logo.png" alt="Dream Builder AI" className="h-8 w-auto object-contain" />
+          <img src="/assets/images/logo.png" alt="Dream Builder AI" className="h-8 w-auto object-contain" />
           <span className="font-display font-bold text-lg text-text-primary tracking-tight truncate">Dream Builder AI</span>
         </div>
         <nav className="p-4 space-y-2">

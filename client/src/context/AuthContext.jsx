@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-//import { getCurrentUser } from '../services/auth.api';
+import { getCurrentUser } from '../services/auth.api';
 
 const AuthContext = createContext(undefined);
 
