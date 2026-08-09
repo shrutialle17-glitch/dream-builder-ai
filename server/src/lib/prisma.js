@@ -1,9 +1,15 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is required but was not set.');
+}
+
 // 1. Setup the connection pool using the standard 'pg' driver
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new pg.Pool({ connectionString });
 
 // 2. Wrap it in the Prisma Adapter
 const adapter = new PrismaPg(pool);

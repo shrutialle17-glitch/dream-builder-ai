@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler.js';
+import authRoutes from './routes/auth.routes.js';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 // API Routes
-
+app.use('/api/auth', authRoutes);
 
 // 404 handler
 app.use((req, res, next) => {

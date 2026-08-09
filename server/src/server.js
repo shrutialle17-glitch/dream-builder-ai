@@ -1,8 +1,6 @@
+import 'dotenv/config';
 import app from './app.js';
-import dotenv from 'dotenv';
 import prisma from './lib/prisma.js';
-
-dotenv.config();
 
 // Environment variables validation
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'PORT'];
