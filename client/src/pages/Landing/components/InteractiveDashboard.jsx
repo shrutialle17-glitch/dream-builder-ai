@@ -21,7 +21,7 @@ export default function InteractiveDashboard() {
       {/* Background ambient light */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
       
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1650px] mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-display font-bold text-text-primary mb-6">Interactive AI Dashboard Preview</h2>
           <p className="text-xl text-text-secondary max-w-2xl mx-auto">Not just text generation. Experience a Bloomberg-style command center for your startup's execution metrics.</p>

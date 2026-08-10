@@ -35,7 +35,7 @@ const features = [
 export default function JourneySection() {
   return (
     <section className="py-24 px-6 bg-background relative z-10 border-t border-border/50">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1650px] mx-auto">
         
         {/* Process Section */}
         <div className="mb-32">

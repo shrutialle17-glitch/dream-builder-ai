@@ -32,6 +32,8 @@
   --text-primary: #0F172A;
   --text-secondary: #64748B;
   --border: #E2E8F0;
+  --logo-filter: invert(1) hue-rotate(180deg);
+  --hero-opacity: 0.12;
 }
 
 html[data-theme='dark'] {
@@ -46,6 +48,8 @@ html[data-theme='dark'] {
   --text-primary: #FFFFFF;
   --text-secondary: #9CA3AF;
   --border: #252B36;
+  --logo-filter: none;
+  --hero-opacity: 0.35;
 }
 
 body {

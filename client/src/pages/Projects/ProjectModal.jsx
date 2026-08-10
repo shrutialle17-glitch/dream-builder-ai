@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import Modal from '../../components/ui/Modal';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import { Rocket, Target, Building2, Briefcase } from 'lucide-react';
+import { Rocket, Target, Building2, FileText, Lightbulb, Wrench, TrendingUp, RocketIcon } from 'lucide-react';
 
 const projectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -14,10 +14,17 @@ const projectSchema = z.object({
   startupStage: z.string().optional(),
 });
 
+const STAGE_OPTIONS = [
+  { value: 'IDEA', label: 'Idea Phase', hint: 'Just a concept', icon: Lightbulb },
+  { value: 'MVP', label: 'MVP', hint: 'Prototyping', icon: Wrench },
+  { value: 'EARLY_TRACTION', label: 'Early Traction', hint: 'First customers', icon: TrendingUp },
+  { value: 'GROWTH', label: 'Growth', hint: 'Scaling up', icon: RocketIcon },
+];
+
 export default function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, isPending = false }) {
   const isEditing = !!initialData;
-  
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(projectSchema),
     defaultValues: initialData || {
       name: '',
@@ -27,6 +34,9 @@ export default function ProjectModal({ isOpen, onClose, onSubmit, initialData = 
     }
   });
 
+  const descriptionValue = watch('description') || '';
+  const selectedStage = watch('startupStage');
+
   useEffect(() => {
     if (isOpen) {
       reset(initialData || { name: '', description: '', industry: '', startupStage: '' });
@@ -34,10 +44,17 @@ export default function ProjectModal({ isOpen, onClose, onSubmit, initialData = 
   }, [isOpen, initialData, reset]);
 
   return (
-    <Modal 
-      isOpen={isOpen} 
-      onClose={onClose} 
-      title={isEditing ? 'Edit Project' : 'New Project'}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={
+        <span className="flex items-center gap-2.5">
+          <span className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-lg text-primary shrink-0">
+            <Rocket size={16} />
+          </span>
+          {isEditing ? 'Edit Project' : 'New Project'}
+        </span>
+      }
       description={isEditing ? 'Update your startup details below.' : 'Give your new startup a name and basic details to get started.'}
       footer={
         <div className="flex items-center justify-end gap-3 w-full">
@@ -49,56 +66,83 @@ export default function ProjectModal({ isOpen, onClose, onSubmit, initialData = 
         </div>
       }
     >
-      <form className="space-y-6 py-2">
-        <div className="space-y-4">
-          <Input 
-            label="Project Name" 
-            placeholder="e.g., NovaCare AI"
-            {...register('name')}
-            error={errors.name?.message}
-            icon={<Target size={18} className="text-text-secondary" />}
-          />
-          
+      <form className="space-y-5 py-2">
+        {/* Core details */}
+        <div className="bg-background/60 border border-border/60 rounded-2xl p-5 space-y-5">
+          <div>
+            <Input
+              label="Project Name"
+              placeholder="e.g., NovaCare AI"
+              {...register('name')}
+              error={errors.name?.message}
+              icon={<Target size={18} className="text-text-secondary" />}
+            />
+            <p className="text-xs text-text-secondary mt-1.5 ml-0.5">This is how your project will appear across the platform.</p>
+          </div>
+
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-text-primary">Description</label>
-            <textarea 
-              className={`w-full px-4 py-3 bg-background border ${errors.description ? 'border-danger focus:ring-danger' : 'border-border focus:ring-primary'} rounded-xl text-text-primary focus:outline-none focus:ring-2 transition-all resize-none min-h-[100px] placeholder:text-text-secondary`}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
+                <FileText size={14} className="text-text-secondary" />
+                Description
+                <span className="text-xs font-normal text-text-secondary">(optional)</span>
+              </label>
+              {descriptionValue.length > 0 && (
+                <span className="text-xs text-text-secondary tabular-nums">{descriptionValue.length}</span>
+              )}
+            </div>
+            <textarea
+              className={`w-full px-4 py-3 bg-surface border ${errors.description ? 'border-danger focus:ring-danger' : 'border-border hover:border-text-secondary/40 focus:border-primary focus:ring-primary'} rounded-xl text-text-primary focus:outline-none focus:ring-2 transition-all resize-none min-h-[90px] placeholder:text-text-secondary`}
               placeholder="Brief description of your startup idea and the problem it solves..."
               {...register('description')}
             />
             {errors.description && <p className="text-xs text-danger mt-1">{errors.description.message}</p>}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <Input 
-              label="Industry" 
-              placeholder="e.g., HealthTech, SaaS"
-              {...register('industry')}
-              error={errors.industry?.message}
-              icon={<Building2 size={18} className="text-text-secondary" />}
-            />
-            
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-text-primary">Startup Stage</label>
-              <div className="relative">
-                <Briefcase size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
-                <select 
-                  className={`w-full pl-10 pr-4 py-2.5 bg-background border ${errors.startupStage ? 'border-danger focus:ring-danger' : 'border-border focus:ring-primary'} rounded-xl text-text-primary appearance-none focus:outline-none focus:ring-2 transition-all`}
-                  {...register('startupStage')}
+          <Input
+            label="Industry (optional)"
+            placeholder="e.g., HealthTech, SaaS"
+            {...register('industry')}
+            error={errors.industry?.message}
+            icon={<Building2 size={18} className="text-text-secondary" />}
+          />
+        </div>
+
+        {/* Stage selector */}
+        <div className="space-y-2.5">
+          <label className="block text-sm font-medium text-text-primary">
+            Startup Stage <span className="text-xs font-normal text-text-secondary">(optional)</span>
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            {STAGE_OPTIONS.map(({ value, label, hint, icon: Icon }) => {
+              const isSelected = selectedStage === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setValue('startupStage', value, { shouldValidate: true, shouldDirty: true })}
+                  className={`relative flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all ${
+                    isSelected
+                      ? 'border-primary bg-primary/[0.06] ring-1 ring-primary/30'
+                      : 'border-border hover:border-text-secondary/40 hover:bg-background/40'
+                  }`}
                 >
-                  <option value="" disabled className="text-text-secondary">Select Stage</option>
-                  <option value="IDEA">Idea Phase</option>
-                  <option value="MVP">MVP / Prototyping</option>
-                  <option value="EARLY_TRACTION">Early Traction</option>
-                  <option value="GROWTH">Growth & Scaling</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-text-secondary">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
-                </div>
-              </div>
-              {errors.startupStage && <p className="text-xs text-danger mt-1">{errors.startupStage.message}</p>}
-            </div>
+                  <span className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-colors ${
+                    isSelected ? 'bg-primary/15 text-primary' : 'bg-background text-text-secondary'
+                  }`}>
+                    <Icon size={15} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className={`block text-sm font-medium truncate ${isSelected ? 'text-primary' : 'text-text-primary'}`}>
+                      {label}
+                    </span>
+                    <span className="block text-xs text-text-secondary truncate">{hint}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
+          {errors.startupStage && <p className="text-xs text-danger">{errors.startupStage.message}</p>}
         </div>
       </form>
     </Modal>

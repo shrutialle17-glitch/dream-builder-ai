@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '../../hooks/useProjectQueries';
-import { LayoutGrid, List, FolderKanban, Search, Filter } from 'lucide-react';
+import { LayoutGrid, List, FolderKanban, Search, Filter, Pencil, Trash2, Building2, Briefcase } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import EmptyState from '../../components/ui/EmptyState';
 import Skeleton from '../../components/ui/Skeleton';
@@ -15,7 +15,7 @@ export default function Projects() {
   const [viewMode, setViewMode] = useState('grid');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
-  
+
   const { data, isLoading } = useProjects();
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject(editingProject?.id);
@@ -47,8 +47,8 @@ export default function Projects() {
     { header: 'Industry', accessor: 'industry' },
     { header: 'Stage', accessor: 'startupStage' },
     { header: 'Status', render: (row) => <Badge variant={row.status === 'ACTIVE' ? 'success' : 'default'}>{row.status}</Badge> },
-    { 
-      header: 'Actions', 
+    {
+      header: 'Actions',
       render: (row) => (
         <div className="flex items-center gap-2">
           <button onClick={() => handleOpenModal(row)} className="text-primary hover:underline text-sm font-medium">Edit</button>
@@ -60,40 +60,42 @@ export default function Projects() {
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Projects" 
+      <PageHeader
+        title="Projects"
         description="Manage your startup portfolio."
         action={{ label: 'New Project', onClick: () => handleOpenModal() }}
       />
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
+      <div className="flex flex-col sm:flex-row justify-between gap-3">
         <div className="flex gap-2 flex-1">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-2.5 text-text-secondary" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search projects..." 
-              className="w-full pl-10 pr-4 py-2 bg-surface border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              className="w-full h-11 pl-10 pr-4 bg-surface border border-border rounded-xl text-sm text-text-primary placeholder:text-text-secondary hover:border-text-secondary/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
             />
           </div>
-          <Button variant="secondary" className="gap-2">
-            <Filter size={18} />
+          <Button variant="secondary" className="h-11 gap-2 shrink-0">
+            <Filter size={16} />
             <span className="hidden sm:inline">Filter</span>
           </Button>
         </div>
-        <div className="flex items-center bg-surface border border-border rounded-xl p-1">
-          <button 
+        <div className="flex items-center bg-surface border border-border rounded-xl p-1 h-11 self-start sm:self-auto">
+          <button
             onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary/10 text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+            aria-label="Grid view"
+            className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary/10 text-primary' : 'text-text-secondary hover:text-text-primary'}`}
           >
-            <LayoutGrid size={18} />
+            <LayoutGrid size={17} />
           </button>
-          <button 
+          <button
             onClick={() => setViewMode('table')}
-            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-primary/10 text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+            aria-label="Table view"
+            className={`p-2 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-primary/10 text-primary' : 'text-text-secondary hover:text-text-primary'}`}
           >
-            <List size={18} />
+            <List size={17} />
           </button>
         </div>
       </div>
@@ -103,29 +105,62 @@ export default function Projects() {
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-48 w-full" />)}
         </div>
       ) : projects.length === 0 ? (
-        <EmptyState 
-          icon={<FolderKanban size={48} />}
-          title="No projects yet"
-          description="Create your first project to start validating your ideas."
-          action={{ label: 'Create Project', onClick: () => handleOpenModal() }}
-        />
+        <Card>
+          <CardBody className="py-4">
+            <EmptyState
+              icon={<FolderKanban size={48} className="text-text-secondary" />}
+              title="No projects yet"
+              description="Create your first project to start validating your ideas."
+              action={{ label: 'Create Project', onClick: () => handleOpenModal() }}
+            />
+          </CardBody>
+        </Card>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map(project => (
-            <Card key={project.id} className="hover:border-primary/50 transition-colors">
+            <Card
+              key={project.id}
+              className="relative overflow-hidden group hover:shadow-lg hover:shadow-black/5 hover:border-primary/40 transition-all duration-200"
+            >
+              <div className={`absolute top-0 left-0 right-0 h-[3px] ${project.status === 'ACTIVE' ? 'bg-success/70' : 'bg-border'}`}></div>
               <CardBody className="flex flex-col h-full">
                 <div className="flex justify-between items-start mb-4">
                   <Badge variant={project.status === 'ACTIVE' ? 'success' : 'default'}>{project.status}</Badge>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleOpenModal(project)} className="text-text-secondary hover:text-primary text-sm font-medium transition-colors">Edit</button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleOpenModal(project)}
+                      aria-label="Edit project"
+                      className="p-1.5 rounded-lg text-text-secondary hover:text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      disabled={isDeleting}
+                      aria-label="Delete project"
+                      className="p-1.5 rounded-lg text-text-secondary hover:text-danger hover:bg-danger/10 transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
-                <h3 className="text-lg font-display font-semibold text-text-primary">{project.name}</h3>
-                <p className="text-sm text-text-secondary mt-2 flex-1 line-clamp-2">{project.description || 'No description provided.'}</p>
-                
+
+                <h3 className="text-lg font-display font-semibold text-text-primary group-hover:text-primary transition-colors truncate">
+                  {project.name}
+                </h3>
+                <p className="text-sm text-text-secondary mt-2 flex-1 line-clamp-2">
+                  {project.description || 'No description provided.'}
+                </p>
+
                 <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-text-secondary">
-                  <span>{project.industry || 'No industry'}</span>
-                  <span>{project.startupStage || 'No stage'}</span>
+                  <span className="flex items-center gap-1.5 min-w-0">
+                    <Building2 size={13} className="shrink-0" />
+                    <span className="truncate">{project.industry || 'No industry'}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5 shrink-0">
+                    <Briefcase size={13} />
+                    {project.startupStage || 'No stage'}
+                  </span>
                 </div>
               </CardBody>
             </Card>
@@ -137,9 +172,9 @@ export default function Projects() {
         </Card>
       )}
 
-      <ProjectModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <ProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}
         initialData={editingProject}
         isPending={isCreating || isUpdating}

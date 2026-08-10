@@ -1,5 +1,7 @@
 import api from '../lib/axios';
 
+export const loginWithGoogle = (credential) => api.post('/auth/google', { credential });
+
 export const login = async (credentials) => {
   const { data } = await api.post('/auth/login', credentials);
   return data.user;

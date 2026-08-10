@@ -24,19 +24,43 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const handleUnauthorized = () => {
       queryClient.setQueryData(['auth', 'currentUser'], null);
+      // remove any client-side token storage if used
+      try {
+        localStorage.removeItem('auth_token');
+      } catch (e) {
+        // ignore
+      }
     };
-    
+
     window.addEventListener('auth-unauthorized', handleUnauthorized);
     return () => window.removeEventListener('auth-unauthorized', handleUnauthorized);
   }, [queryClient]);
+
+  // Helper to set the logged-in user (used after social login)
+  const setContextLogin = (userData, token) => {
+    queryClient.setQueryData(['auth', 'currentUser'], userData);
+    try {
+      if (token) localStorage.setItem('auth_token', token);
+    } catch (e) {
+      // ignore storage errors
+    }
+  };
+
+  const contextLogout = () => {
+    queryClient.setQueryData(['auth', 'currentUser'], null);
+    try {
+      localStorage.removeItem('auth_token');
+    } catch (e) {}
+  };
 
   const value = {
     user: user || null,
     isAuthenticated: !!user,
     isLoading: isInitializing,
     refetchUser: refetch,
+    setContextLogin,
+    logout: contextLogout,
   };
-  
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
