@@ -21,3 +21,13 @@ export const getCurrentUser = async () => {
   const { data } = await api.get('/auth/me');
   return data.user;
 };
+
+export const updateProfile = async (userData) => {
+  const { data } = await api.patch('/auth/me', userData);
+  return data.user;
+};
+
+export const updatePassword = async (passwordData) => {
+  const { data } = await api.patch('/auth/me/password', passwordData);
+  return data;
+};

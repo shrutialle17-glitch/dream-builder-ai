@@ -1,38 +1,6 @@
-import { OAuth2Client } from 'google-auth-library';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma.js';
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-export const googleLogin = async (credentialToken) => {
-  // 1. Verify the token with Google
-  const ticket = await googleClient.verifyIdToken({
-    idToken: credentialToken,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
-  
-  // 2. Extract user info from Google's response
-  const payload = ticket.getPayload();
-  const { email, name } = payload;
-  // 3. Check if user exists in our database
-  let user = await prisma.user.findUnique({ where: { email } });
-  // 4. If they don't exist, create an account automatically (Registration)
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        // Give them a random, highly secure password since they authenticate via Google
-        password: await bcrypt.hash(Math.random().toString(36) + Date.now(), 10), 
-      }
-    });
-  }
-  // 5. Generate our standard app JWT (just like normal login)
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-  
-  return { user, token };
-};
 
 export const registerUser = async (data) => {
   const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
@@ -110,4 +78,46 @@ export const getUserById = async (id) => {
     throw error;
   }
   return user;
+};
+
+export const updateUser = async (id, data) => {
+  const user = await prisma.user.update({
+    where: { id },
+    data: {
+      name: data.name,
+      // theme: data.theme // if theme exists in schema
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    }
+  });
+  return user;
+};
+
+export const updatePassword = async (id, currentPassword, newPassword) => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    const error = new Error('Incorrect current password');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+  await prisma.user.update({
+    where: { id },
+    data: { password: hashedPassword }
+  });
+  
+  return { success: true };
 };
