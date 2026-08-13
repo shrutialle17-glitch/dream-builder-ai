@@ -9,6 +9,7 @@ export const getProjects = async (userId, { page = 1, limit = 10 }) => {
       take: Number(limit),
       orderBy: { updatedAt: 'desc' },
       include: {
+        startupOverview: { select: { id: true } },
         ideaValidation: { select: { status: true } },
         startupDNA: { select: { status: true } },
         businessPlan: { select: { id: true } },

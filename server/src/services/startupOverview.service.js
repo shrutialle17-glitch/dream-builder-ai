@@ -44,6 +44,11 @@ export const generateStartupOverview = async (projectId) => {
       ...validData
     }
   });
+  // Mark the parent project as ACTIVE since an overview was generated
+  await prisma.project.update({
+    where: { id: projectId },
+    data: { status: 'ACTIVE' }
+  });
 
   return overview;
 };
