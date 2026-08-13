@@ -10,12 +10,14 @@ model User {
   id        String    @id @default(uuid())
   name      String
   email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt  DateTime      @updatedAt
-  projects   Project[]
-  activities ActivityLog[]
+  password          String
+  resetToken        String?
+  resetTokenExpires DateTime?
+  role              Role          @default(USER)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  projects          Project[]
+  activities        ActivityLog[]
 }
 
 enum Role {
@@ -35,6 +37,16 @@ model Project {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   activities    ActivityLog[]
+  startupOverview StartupOverview?
+  ideaValidation  IdeaValidation?
+  startupDNA      StartupDNA?
+  businessPlan    BusinessPlan?
+  mvpPlan         MVPPlan?
+  branding        Branding?
+  pitchDeck       PitchDeck?
+  digitalTwin     DigitalTwin?
+  marketResearch  MarketResearch?
+  chatMessages    ChatMessage[]
 }
 
 model ActivityLog {
@@ -49,4 +61,237 @@ model ActivityLog {
   
   // Optional relations for tight coupling, but loose entityId is often better for generic logs
   project     Project? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+}
+
+model StartupOverview {
+  id                      String   @id @default(uuid())
+  projectId               String   @unique
+  project                 Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  summary                 String
+  problem                 String
+  solution                String
+  targetCustomer          String
+  valueProposition        String
+  keyUseCase              String
+  businessModelHypothesis String
+  startupCategory         String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model IdeaValidation {
+  id                            String   @id @default(uuid())
+  projectId                     String   @unique
+  project                       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status                        String   @default("NOT_STARTED") // NOT_STARTED, GENERATING, COMPLETED, FAILED
+  validationScore               Int?
+  summary                       String?
+
+  problemStrengthScore          Int?
+  problemStrengthAnalysis       String?
+
+  marketNeedScore               Int?
+  marketNeedAnalysis            String?
+
+  solutionFitScore              Int?
+  solutionFitAnalysis           String?
+
+  targetCustomerClarityScore    Int?
+  targetCustomerClarityAnalysis String?
+
+  differentiationScore          Int?
+  differentiationAnalysis       String?
+
+  competitionScore              Int?
+  competitionAnalysis           String?
+
+  feasibilityScore              Int?
+  feasibilityAnalysis           String?
+
+  scalabilityScore              Int?
+  scalabilityAnalysis           String?
+
+  executionComplexityScore      Int?
+  executionComplexityAnalysis   String?
+
+  riskScore                     Int?
+  riskAnalysis                  String?
+
+  strengths                     Json?
+  weaknesses                    Json?
+  opportunities                 Json?
+  risks                         Json?
+  recommendations               Json?
+
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+}
+
+model StartupDNA {
+  id                  String   @id @default(uuid())
+  projectId           String   @unique
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status              String   @default("NOT_STARTED") // NOT_STARTED, COMPLETED, FAILED
+  profileName         String?
+  profileDescription  String?
+  overallScore        Int?
+  summary             String?
+  
+  dimensions          Json?
+  traits              Json?
+  strengths           Json?
+  weaknesses          Json?
+  risks               Json?
+  opportunities       Json?
+  recommendations     Json?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model BusinessPlan {
+  id                     String   @id @default(uuid())
+  projectId              String   @unique
+  project                Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status                 String   @default("NOT_STARTED") // NOT_STARTED, COMPLETED, FAILED
+  
+  executiveSummary       Json?
+  marketOpportunity      Json?
+  businessModel          Json?
+  goToMarket             Json?
+  competitivePositioning Json?
+  operations             Json?
+  resources              Json?
+  costStructure          Json?
+  growthStrategy         Json?
+  keyMetrics             Json?
+  risks                  Json?
+  recommendations        Json?
+  
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model MVPPlan {
+  id                 String   @id @default(uuid())
+  projectId          String   @unique
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status             String   @default("NOT_STARTED") // NOT_STARTED, COMPLETED, FAILED
+  
+  objective          String?
+  coreUser           String?
+  problem            String?
+  valueProposition   String?
+  mustHaveFeatures   Json?
+  shouldHaveFeatures Json?
+  couldHaveFeatures  Json?
+  laterFeatures      Json?
+  userFlow           Json?
+  roadmap            Json?
+  successMetrics     Json?
+  launchChecklist    Json?
+  readinessScore     Int?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+enum ModuleType {
+  IDEA_VALIDATION
+  STARTUP_DNA
+  BUSINESS_PLAN
+  MVP_PLANNER
+  BRANDING
+  PITCH_DECK
+  DIGITAL_TWIN
+  MARKET_RESEARCH
+}
+
+enum MessageRole {
+  USER
+  AI
+}
+
+model ChatMessage {
+  id        String      @id @default(uuid())
+  projectId String
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  module    ModuleType
+  role      MessageRole
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+
+  @@index([projectId, module, createdAt])
+}
+
+model Branding {
+  id              String   @id @default(uuid())
+  projectId       String   @unique
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  positioning     Json?
+  personality     Json?
+  voice           Json?
+  archetype       Json?
+  keywords        Json?
+  visualDirection Json?
+  colorPalette    Json?
+  typography      Json?
+  logoDirection   Json?
+  taglines        Json?
+  messaging       Json?
+  dos             Json?
+  donts           Json?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model PitchDeck {
+  id              String   @id @default(uuid())
+  projectId       String   @unique
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  title           String?
+  slides          Json?
+  theme           Json?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model DigitalTwin {
+  id                      String   @id @default(uuid())
+  projectId               String   @unique
+  project                 Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  baseAssumptions         Json?
+  optimisticAssumptions   Json?
+  conservativeAssumptions Json?
+  customAssumptions       Json?
+  simulationResults       Json?
+  insights                Json?
+  
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model MarketResearch {
+  id                  String   @id @default(uuid())
+  projectId           String   @unique
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  marketOverview      Json?
+  customerSegments    Json?
+  trends              Json?
+  competitors         Json?
+  positioning         Json?
+  opportunities       Json?
+  risks               Json?
+  swot                Json?
+  recommendations     Json?
+  validationQuestions Json?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }

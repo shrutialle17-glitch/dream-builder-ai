@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import prisma from '../lib/prisma.js';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const registerUser = async (data) => {
   const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
@@ -43,6 +46,48 @@ export const loginUser = async (email, password) => {
     const error = new Error('Invalid credentials');
     error.statusCode = 401;
     throw error;
+  }
+
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+  );
+
+  const userWithoutPassword = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  return { user: userWithoutPassword, token };
+};
+
+export const googleLogin = async (credential) => {
+  const ticket = await googleClient.verifyIdToken({
+    idToken: credential,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload?.email || !payload?.name) {
+    const error = new Error('Invalid Google credential payload');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const email = payload.email;
+  let user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        name: payload.name,
+        email,
+        password: await bcrypt.hash(Math.random().toString(36) + Date.now(), 12),
+      },
+    });
   }
 
   const token = jwt.sign(
