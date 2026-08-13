@@ -49,6 +49,19 @@ export default function Dashboard() {
     }
   };
 
+  const getProjectComputedStatus = (p) => {
+    if (p.status === 'ACTIVE') return 'ACTIVE'; // If manually set
+    const isActive = p.ideaValidation?.status === 'COMPLETED' ||
+                     p.startupDNA?.status === 'COMPLETED' ||
+                     !!p.businessPlan ||
+                     !!p.mvpPlan ||
+                     !!p.branding ||
+                     !!p.pitchDeck ||
+                     !!p.digitalTwin ||
+                     !!p.marketResearch;
+    return isActive ? 'ACTIVE' : 'DRAFT';
+  };
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -153,32 +166,36 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="divide-y divide-border">
-                {recentProjects.map(project => (
-                  <div
-                    key={project.id}
-                    className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-background/50 transition-colors gap-4 group"
-                  >
-                    <div className="min-w-0">
-                      <h4 className="font-medium text-text-primary group-hover:text-primary cursor-pointer transition-colors truncate">
-                        {project.name}
-                      </h4>
-                      <p className="text-sm text-text-secondary mt-1 line-clamp-1">
-                        {project.description || 'No description'}
-                      </p>
+                {recentProjects.map(project => {
+                  const computedStatus = getProjectComputedStatus(project);
+                  return (
+                    <div
+                      key={project.id}
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                      className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-background/50 transition-colors gap-4 group cursor-pointer"
+                    >
+                      <div className="min-w-0">
+                        <h4 className="font-medium text-text-primary group-hover:text-primary transition-colors truncate">
+                          {project.name}
+                        </h4>
+                        <p className="text-sm text-text-secondary mt-1 line-clamp-1">
+                          {project.description || 'No description'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 whitespace-nowrap">
+                        <Badge variant={computedStatus === 'ACTIVE' ? 'success' : 'default'}>{computedStatus}</Badge>
+                        <span className="text-xs text-text-secondary flex items-center gap-1">
+                          <Clock size={12} />
+                          {new Date(project.updatedAt).toLocaleDateString()}
+                        </span>
+                        <ArrowRight
+                          size={14}
+                          className="text-text-secondary/0 group-hover:text-text-secondary transition-colors hidden sm:block"
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 whitespace-nowrap">
-                      <Badge variant={project.status === 'ACTIVE' ? 'success' : 'default'}>{project.status}</Badge>
-                      <span className="text-xs text-text-secondary flex items-center gap-1">
-                        <Clock size={12} />
-                        {new Date(project.updatedAt).toLocaleDateString()}
-                      </span>
-                      <ArrowRight
-                        size={14}
-                        className="text-text-secondary/0 group-hover:text-text-secondary transition-colors hidden sm:block"
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardBody>
