@@ -15,6 +15,10 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Settings from "./pages/Settings/Settings";
 import Projects from "./pages/Projects/Projects";
 
+import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
+import StartupWorkspace from './pages/Workspace/StartupWorkspace';
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -48,6 +52,12 @@ function App() {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/projects" element={<Projects />} />
                   <Route path="/settings" element={<Settings />} />
+                </Route>
+                <Route
+                  path="/projects/:projectId"
+                  element={<WorkspaceLayout />}
+                >
+                  <Route index element={<StartupWorkspace />} />
                 </Route>
               </Route>
             </Routes>

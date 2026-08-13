@@ -9,7 +9,9 @@ const router = express.Router();
 
 const authLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10, // Limit each IP to 10 auth requests per minute
+  // Make the limit configurable via env var for development convenience
+  // Defaults to 50 requests per minute if AUTH_RATE_LIMIT_MAX is not set
+  max: Number(process.env.AUTH_RATE_LIMIT_MAX) || 50,
   message: { success: false, message: 'Too many requests, please try again later.' }
 });
 

@@ -7,7 +7,17 @@ export const getProjects = async (userId, { page = 1, limit = 10 }) => {
       where: { userId },
       skip,
       take: Number(limit),
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        ideaValidation: { select: { status: true } },
+        startupDNA: { select: { status: true } },
+        businessPlan: { select: { id: true } },
+        mvpPlan: { select: { id: true } },
+        branding: { select: { id: true } },
+        pitchDeck: { select: { id: true } },
+        digitalTwin: { select: { id: true } },
+        marketResearch: { select: { id: true } }
+      }
     }),
     prisma.project.count({ where: { userId } })
   ]);
