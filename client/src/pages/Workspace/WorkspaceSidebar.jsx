@@ -22,6 +22,7 @@ import { useBranding } from '../../hooks/useBranding';
 import { usePitchDeck } from '../../hooks/usePitchDeck';
 import { useDigitalTwin } from '../../hooks/useDigitalTwin';
 import { useMarketResearch } from '../../hooks/useMarketResearch';
+import Logo from '../../components/common/Logo';
 
 const WorkspaceSidebar = ({ project, isOpen, toggleSidebar }) => {
   const { data: validation } = useIdeaValidation(project.id);
@@ -51,7 +52,7 @@ const WorkspaceSidebar = ({ project, isOpen, toggleSidebar }) => {
   return (
     <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-sidebar border-r border-border flex flex-col h-full transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="flex items-center justify-start gap-3 h-16 border-b border-border px-6 py-2 flex-shrink-0">
-        <img src="/assets/images/logo.png" alt="Dream Builder AI" className="h-8 w-auto object-contain" />
+        <Logo />
         <span className="font-display font-bold text-lg text-text-primary tracking-tight truncate">Dream Builder AI</span>
       </div>
       <div className="p-6 border-b border-border flex-shrink-0">

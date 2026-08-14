@@ -61,3 +61,28 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.logo-dark {
+  display: none;
+}
+.logo-light {
+  display: block;
+}
+
+html[data-theme='dark'] .logo-dark {
+  display: block;
+}
+html[data-theme='dark'] .logo-light {
+  display: none;
+}

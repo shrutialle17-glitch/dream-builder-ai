@@ -11,6 +11,7 @@ import ThemeToggle from "../../components/common/ThemeToggle";
 import { GoogleLogin } from "@react-oauth/google";
 import { loginWithGoogle } from "../../services/auth.api";
 import { useAuth } from "../../context/AuthContext";
+import Logo from '../../components/common/Logo';
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -74,11 +75,7 @@ export default function Login() {
 
         {/* Logo Area */}
         <div className="relative z-10 flex items-center gap-2.5">
-          <img
-            src="/assets/images/logo.png"
-            alt="Dream Builder AI"
-            className="h-9 w-auto object-contain"
-          />
+          <Logo/>
           <span className="font-display font-bold text-lg text-text-primary tracking-tight">
             Dream Builder AI
           </span>
@@ -115,11 +112,7 @@ export default function Login() {
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-6 border-b border-border bg-surface/80 backdrop-blur-md">
           <div className="flex items-center gap-2">
-            <img
-              src="/assets/images/logo.png"
-              alt="Dream Builder AI"
-              className="h-8 w-auto object-contain"
-            />
+            <Logo />
             <span className="font-display font-bold text-lg text-text-primary">
               Dream Builder AI
             </span>

@@ -1,7 +1,12 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import Button from '../../components/ui/Button';
 import ThemeToggle from '../../components/common/ThemeToggle';
 import { useAuth } from '../../context/AuthContext';
+import { useLenis } from '../../hooks/useLenis';
+import Logo from '../../components/common/Logo';
 
 import HeroSection from './components/HeroSection';
 import HowItWorksSection from './components/HowItWorksSection';
@@ -13,6 +18,30 @@ import MetricsSection from './components/MetricsSection';
 
 export default function Landing() {
   const { isAuthenticated } = useAuth();
+  useLenis();
+  const ctaRef = useRef(null);
+  
+  useGSAP(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      gsap.set('.final-cta-content', { opacity: 1, y: 0 });
+      return;
+    }
+    
+    gsap.fromTo('.final-cta-content',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ctaRef.current,
+          start: 'top 80%',
+          once: true
+        }
+      }
+    );
+  }, { scope: ctaRef });
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 font-sans">
@@ -54,27 +83,32 @@ export default function Landing() {
       <MetricsSection />
 
       {/* Final Minimal CTA Section */}
-      <section className="py-32 px-6 bg-background relative overflow-hidden flex items-center justify-center text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50" />
+      <section ref={ctaRef} className="py-32 px-6 bg-background relative overflow-hidden flex items-center justify-center text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
         
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-text-primary mb-8 tracking-tight">Your Idea Is Waiting.<br/>Let's Build It.</h2>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to={isAuthenticated ? "/dashboard" : "/register"}>
-              <Button size="lg" className="w-full sm:w-auto px-10 h-12 font-semibold shadow-[0_0_15px_rgba(0,184,217,0.3)] border-none text-white">
-                Get Started Now
-              </Button>
-            </Link>
+        <div className="final-cta-content relative z-10 max-w-5xl mx-auto w-full">
+          <div className="bg-surface/50 backdrop-blur-3xl border border-border dark:border-white/10 rounded-[3rem] p-12 md:p-24 relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group">
+            {/* Ambient Glow inside CTA */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-primary)_0%,transparent_100%)] opacity-[0.08] group-hover:opacity-[0.15] transition-opacity duration-700 pointer-events-none blur-3xl" />
+            
+            <h2 className="relative z-10 text-4xl md:text-6xl font-display font-bold text-text-primary mb-8 tracking-tight">Your Idea Is Waiting.<br/>Let's Build It.</h2>
+            <div className="relative z-10 flex flex-col sm:flex-row justify-center gap-4">
+              <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+                <Button size="lg" className="w-full sm:w-auto px-10 h-14 font-semibold shadow-[0_0_15px_rgba(0,184,217,0.3)] hover:shadow-[0_0_25px_rgba(0,184,217,0.5)] border-none text-white text-lg transition-all duration-300">
+                  Get Started Now
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Refined Footer */}
-      <footer className="border-t border-border bg-background py-16 px-6">
+      <footer className="border-t border-border bg-surface/30 py-16 px-6">
         <div className="max-w-[1650px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src="/assets/images/logo.png" alt="Dream Builder AI" className="h-8 w-auto object-contain opacity-70" style={{ filter: 'var(--logo-filter)' }} />
+              <Logo className="opacity-70" />
               <span className="font-display font-bold text-lg text-text-primary tracking-tight opacity-90">Dream Builder AI</span>
             </div>
             <p className="text-text-secondary text-sm">An operating system for building startups.</p>

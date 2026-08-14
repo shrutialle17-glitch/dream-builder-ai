@@ -7,7 +7,7 @@ import { useForgotPassword } from '../../hooks/useAuthQueries';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import ThemeToggle from '../../components/common/ThemeToggle';
-
+import Logo from '../../components/common/Logo';
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
 });
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-6 border-b border-border bg-surface/80 backdrop-blur-md">
           <div className="flex items-center gap-2">
-            <img src="/assets/images/logo.png" alt="Dream Builder AI" className="h-8 w-auto object-contain" />
+            <Logo />
             <span className="font-display font-bold text-lg text-text-primary">Dream Builder AI</span>
           </div>
         </div>
