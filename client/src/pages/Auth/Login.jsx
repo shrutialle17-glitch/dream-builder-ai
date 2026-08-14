@@ -12,7 +12,6 @@ import { GoogleLogin } from "@react-oauth/google";
 import { loginWithGoogle } from "../../services/auth.api";
 import { useAuth } from "../../context/AuthContext";
 
-
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
@@ -139,7 +138,11 @@ export default function Login() {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4"
+              noValidate
+            >
               {isError && (
                 <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-medium text-center">
                   {error?.message || "Invalid credentials. Please try again."}
@@ -181,12 +184,14 @@ export default function Login() {
                   />
                   <span>Remember me</span>
                 </label>
-                <button
-                  type="button"
-                  className="text-primary hover:text-primary-hover hover:underline underline-offset-2 font-medium focus:outline-none"
-                >
-                  Forgot password?
-                </button>
+                <div className="flex justify-end pt-1 pb-2">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-primary font-medium hover:text-primary-hover transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
 
               <Button

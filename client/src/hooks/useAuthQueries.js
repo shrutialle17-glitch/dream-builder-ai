@@ -74,3 +74,29 @@ export const useUpdatePassword = () => {
     },
   });
 };
+
+import { forgotPassword, resetPassword } from '../services/auth.api';
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: (data) => {
+      toast.success(data.message || 'Reset link sent successfully!');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to request password reset');
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: resetPassword,
+    onSuccess: (data) => {
+      toast.success(data.message || 'Password reset successfully!');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to reset password');
+    },
+  });
+};

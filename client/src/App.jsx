@@ -11,6 +11,8 @@ import AppLayout from "./layouts/AppLayout";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Settings from "./pages/Settings/Settings";
 import Projects from "./pages/Projects/Projects";
@@ -39,6 +41,8 @@ function App() {
               <Route element={<PublicRoute />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route
                   path="/auth"
                   element={<Navigate to="/login" replace />}
