@@ -17,7 +17,7 @@ import Projects from "./pages/Projects/Projects";
 
 import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
 import StartupWorkspace from './pages/Workspace/StartupWorkspace';
-
+import BusinessPlanPage from './pages/BusinessPlan/BusinessPlanPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +58,7 @@ function App() {
                   element={<WorkspaceLayout />}
                 >
                   <Route index element={<StartupWorkspace />} />
+                  <Route path="business-plan" element={<BusinessPlanPage />} />
                 </Route>
               </Route>
             </Routes>
