@@ -24,7 +24,14 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    code: 'TOO_MANY_REQUESTS',
+    message: 'Too many requests. Please wait a moment and try again later.'
+  }
 });
 app.use(limiter);
 

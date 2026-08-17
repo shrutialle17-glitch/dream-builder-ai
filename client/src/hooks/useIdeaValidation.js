@@ -29,6 +29,8 @@ export const useGenerateIdeaValidation = (projectId) => {
         toast.error('You must generate the Startup Overview first.');
       } else if (error?.response?.data?.code === 'AI_GENERATION_FAILED') {
         toast.error('The idea validation could not be generated. You can try again.');
+      } else if (error?.status === 429 || error?.response?.status === 429) {
+        toast.error('Too many requests. Please wait a moment and try again.');
       } else {
         toast.error(error.message || 'Failed to generate idea validation');
       }
@@ -47,6 +49,8 @@ export const useRegenerateIdeaValidation = (projectId) => {
     onError: (error) => {
       if (error?.response?.data?.code === 'AI_GENERATION_FAILED') {
         toast.error('The idea validation could not be regenerated. You can try again.');
+      } else if (error?.status === 429 || error?.response?.status === 429) {
+        toast.error('Too many requests. Please wait a moment and try again.');
       } else {
         toast.error(error.message || 'Failed to regenerate idea validation');
       }

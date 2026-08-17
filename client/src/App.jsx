@@ -19,6 +19,7 @@ import Projects from "./pages/Projects/Projects";
 
 import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
 import StartupWorkspace from './pages/Workspace/StartupWorkspace';
+import IdeaValidationPage from './pages/IdeaValidation/IdeaValidationPage';
 
 
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ function App() {
                   element={<WorkspaceLayout />}
                 >
                   <Route index element={<StartupWorkspace />} />
+                  <Route path="validation" element={<IdeaValidationPage />} />
                 </Route>
               </Route>
             </Routes>
