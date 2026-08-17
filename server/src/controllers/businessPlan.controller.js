@@ -1,5 +1,4 @@
 import * as businessPlanService from '../services/businessPlan.service.js';
-
 export const getBusinessPlan = async (req, res, next) => {
   try {
     const { projectId } = req.params;
