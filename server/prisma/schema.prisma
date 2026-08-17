@@ -7,12 +7,12 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
+  id         String        @id @default(uuid())
+  name       String
+  email      String        @unique
+  password   String
+  role       Role          @default(USER)
+  createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   projects   Project[]
   activities ActivityLog[]
@@ -24,29 +24,61 @@ enum Role {
 }
 
 model Project {
-  id            String   @id @default(uuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  name          String
-  description   String?
-  industry      String?
-  startupStage  String?
-  status        String   @default("DRAFT")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  activities    ActivityLog[]
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  name         String
+  description  String?
+  industry     String?
+  startupStage String?
+  status       String        @default("DRAFT")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  activities   ActivityLog[]
+  pitchDecks   PitchDeck[]
+  digitalTwin  DigitalTwin?
 }
 
 model ActivityLog {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action     String
+  entityType String?
+  entityId   String?
+  details    String?
+  createdAt  DateTime  @default(now())
+
+  project    Project?  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+}
+
+model PitchDeck {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  title     String
+  content   Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DigitalTwin {
   id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action      String   // e.g., "PROJECT_CREATED", "PROJECT_UPDATED", "LOGGED_IN"
-  entityType  String?  // e.g., "PROJECT"
-  entityId    String?  // e.g., projectId
-  details     String?  // extra info, maybe stringified JSON or plain text
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name        String?
+  persona     Json?
+  goals       Json?
+  skills      Json?
+  strengths   Json?
+  weaknesses  Json?
+  preferences Json?
+  insights    Json?
+  metadata    Json?
+
   createdAt   DateTime @default(now())
-  
-  // Optional relations for tight coupling, but loose entityId is often better for generic logs
-  project     Project? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime @updatedAt
 }
