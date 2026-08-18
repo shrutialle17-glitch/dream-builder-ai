@@ -20,6 +20,7 @@ import Projects from "./pages/Projects/Projects";
 import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
 import StartupWorkspace from './pages/Workspace/StartupWorkspace';
 import IdeaValidationPage from './pages/IdeaValidation/IdeaValidationPage';
+import StartupDNAPage from "./pages/StartupDNA/StartupDNAPage";
 
 
 const queryClient = new QueryClient({
@@ -64,6 +65,7 @@ function App() {
                 >
                   <Route index element={<StartupWorkspace />} />
                   <Route path="validation" element={<IdeaValidationPage />} />
+                  <Route path="startup-dna" element={<StartupDNAPage />} />
                 </Route>
               </Route>
             </Routes>
