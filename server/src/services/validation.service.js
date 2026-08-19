@@ -2,6 +2,7 @@ import prisma from '../lib/prisma.js';
 import { generateJSON, generateText, fetchFromAIWithRetry } from './ai.service.js';
 import { buildIdeaValidationPrompt } from '../prompts/validation.prompt.js';
 import { ideaValidationResponseSchema } from '../validations/validation.validation.js';
+import { runRAG } from '../../rag/ragService.js';
 
 const VALIDATION_WEIGHTS = {
 
@@ -45,7 +46,74 @@ export const generateIdeaValidation = async (projectId) => {
       throw new Error('OVERVIEW_REQUIRED');
     }
 
-    const prompt = buildIdeaValidationPrompt(project, project.startupOverview);
+    // -----------------------------------------
+    // Generate research context using RAG
+    // -----------------------------------------
+
+    const researchQueries = [
+      `
+      What evidence exists about market demand, unmet needs,
+      major problems, and growth opportunities relevant to this
+      startup idea and industry?
+      `,
+
+      `
+      What does the research say about existing solutions,
+      competition, market gaps, and differentiation opportunities
+      relevant to this startup idea?
+      `,
+
+      `
+      What does the research say about feasibility, scalability,
+      funding, ecosystem support, and major risks for startups
+      in this industry?
+      `
+    ];
+
+    const researchResults = [];
+
+    for (const researchQuery of researchQueries) {
+      const result = await runRAG({
+        query: `
+          Startup idea:
+          ${project.description}
+
+          Industry:
+          ${project.industry}
+
+          Startup stage:
+          ${project.startupStage}
+
+          Research question:
+          ${researchQuery}
+        `,
+        topK: 5
+      });
+
+      researchResults.push(result);
+    }
+
+    const researchContext = researchResults
+      .map((result, index) => `
+    RESEARCH AREA ${index + 1}
+
+    ${result.context || result.answer}
+      `)
+      .join(`
+      
+    ========================================
+
+    `);
+
+    // -----------------------------------------
+    // Build Idea Validation prompt
+    // -----------------------------------------
+
+    const prompt = buildIdeaValidationPrompt(
+      project,
+      project.startupOverview,
+      researchContext
+    );
     
     const rawAIResponse = await fetchFromAIWithRetry(prompt, 1, 2000, 45000);
 
@@ -134,14 +202,56 @@ export const askValidationQuestion = async (projectId, question) => {
     }
   });
 
+  // -----------------------------------------
+  // 2. Retrieve relevant research using RAG
+  // -----------------------------------------
+
+  console.log('\n========================================');
+  console.log('RAG CHAT SEARCH');
+  console.log('========================================');
+  console.log('Question:', question);
+
+  const ragResult = await runRAG({
+    query: `
+      Startup idea:
+      ${project.description}
+
+      Industry:
+      ${project.industry}
+
+      Startup stage:
+      ${project.startupStage}
+
+      Founder question:
+      ${question}
+    `,
+    topK: 5
+  });
+
+  const researchContext = ragResult?.context || ragResult?.answer || '';
+  console.log('RAG research retrieved successfully.');
+
+  // -----------------------------------------
+  // 3. Build Gemini chat prompt
+  // -----------------------------------------
+
   const prompt = `
 You are Dream Builder AI, an expert startup strategist.
+
 The founder of ${project.name} is looking at their Idea Validation report and has asked a question.
 
-Here is the context about their startup:
-Idea: ${project.description}
-Industry: ${project.industry}
-Stage: ${project.startupStage}
+==============================
+STARTUP CONTEXT
+==============================
+
+Idea:
+${project.description}
+
+Industry:
+${project.industry}
+
+Stage:
+${project.startupStage}
 
 Startup Overview:
 ${JSON.stringify(project.startupOverview, null, 2)}
@@ -153,15 +263,24 @@ Weaknesses: ${JSON.stringify(project.ideaValidation.weaknesses)}
 Risks: ${JSON.stringify(project.ideaValidation.risks)}
 Recommendations: ${JSON.stringify(project.ideaValidation.recommendations)}
 
-The Founder asks:
+==============================
+RESEARCH EVIDENCE
+==============================
+The following research evidence was retrieved from the database to help answer the question:
+
+${researchContext}
+
+==============================
+FOUNDER QUESTION
+==============================
 "${question}"
 
-Provide a concise, direct, and highly strategic answer. Do not use generic filler. Act like a top-tier startup consultant advising this specific founder based on the provided context. Format using simple text/markdown (keep it brief, 1-3 short paragraphs).
+Provide a concise, direct, and highly strategic answer. Do not use generic filler. Act like a top-tier startup consultant advising this specific founder based on the provided context and research evidence. Format using simple text/markdown (keep it brief, 1-3 short paragraphs).
 `;
 
   const answer = await generateText(prompt);
 
-  // 2. Save AI answer
+  // 4. Save AI answer
   await prisma.chatMessage.create({
     data: {
       projectId,

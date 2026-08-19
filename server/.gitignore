@@ -1,5 +1,9 @@
 node_modules
 # Keep environment variables out of version control
 .env
+# Ignore RAG Knowledge Base PDFs
+rag/documents/*.pdf
+
 
 /src/generated/prisma
+

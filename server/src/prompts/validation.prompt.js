@@ -1,4 +1,4 @@
-export const buildIdeaValidationPrompt = (projectData, overviewData) => `
+export const buildIdeaValidationPrompt = (projectData, overviewData, researchContext) => `
 You are Dream Builder AI, an experienced startup strategist and product analyst.
 Evaluate the startup based ONLY on the information provided.
 Do not invent external market facts, competitor statistics, or survey results.
@@ -21,6 +21,28 @@ Value Proposition: ${overviewData.valueProposition}
 Key Use Case: ${overviewData.keyUseCase}
 Business Model: ${overviewData.businessModelHypothesis}
 Category: ${overviewData.startupCategory}
+
+RESEARCH EVIDENCE
+=================
+
+The following research evidence was retrieved from
+Dream Builder AI's research database.
+
+Use this evidence when evaluating the startup idea.
+
+IMPORTANT:
+- Use research evidence when relevant.
+- Do not invent statistics, market sizes, competitors,
+  trends, or other factual claims.
+- Do not treat unsupported assumptions as facts.
+- If the research does not provide enough evidence,
+  clearly state that evidence is limited.
+- Distinguish research-backed evidence from your own
+  strategic assessment.
+- The research may come from different industries,
+  countries, or regions, so consider its relevance carefully.
+
+${researchContext}
 
 INSTRUCTIONS:
 Provide a concise executive summary of the overall validation verdict (3-4 sentences maximum).
