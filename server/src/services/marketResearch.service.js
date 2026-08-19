@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma.js';
 import { generateText, fetchFromAIWithRetry } from './ai.service.js';
 import { MARKET_RESEARCH_PROMPT } from '../prompts/marketResearch.prompt.js';
 import { marketResearchGenerationSchema } from '../validations/marketResearch.validation.js';

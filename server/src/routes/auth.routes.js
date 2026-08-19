@@ -1,0 +1,25 @@
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import { register, login, logout, getMe, updateMe, updatePassword, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
+import { validateRequest } from '../middleware/validateRequest.js';
+import { registerSchema, loginSchema } from '../validations/auth.validation.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+
+const router = express.Router();
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // Limit each IP to 10 auth requests per minute
+  message: { success: false, message: 'Too many requests, please try again later.' }
+});
+
+router.post('/register', authLimiter, validateRequest(registerSchema), register);
+router.post('/login', authLimiter, validateRequest(loginSchema), login);
+router.post('/logout', requireAuth, logout);
+router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/reset-password', authLimiter, resetPassword);
+router.get('/me', requireAuth, getMe);
+router.patch('/me', requireAuth, updateMe);
+router.patch('/me/password', requireAuth, updatePassword);
+
+export default router;

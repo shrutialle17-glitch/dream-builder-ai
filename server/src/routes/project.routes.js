@@ -1,32 +1,39 @@
 import express from 'express';
-import {
-  getProjects,
-  getProjectById,
-  createProject,
-  updateProject,
-  deleteProject
-} from '../controllers/project.controller.js';
-
+import { getProjects, getProjectById, createProject, updateProject, deleteProject, getProjectOverview, generateProjectOverview } from '../controllers/project.controller.js';
 import { validateRequest } from '../middleware/validateRequest.js';
-import {
-  createProjectSchema,
-  updateProjectSchema
-} from '../validations/project.validations.js';
+import { createProjectSchema, updateProjectSchema } from '../validations/project.validation.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { aiGenerateLimiter } from '../middleware/rateLimit.middleware.js';
 
-import { requireAuth } from '../middleware/auth.middelware.js';
+// Import all sub-routers
+import validationRoutes from './validation.routes.js';
+import startupDNARoutes from './startupDNA.routes.js';
+import businessPlanRoutes from './businessPlan.routes.js';
+import mvpPlannerRoutes from './mvpPlanner.routes.js';
+import brandingRoutes from './branding.routes.js';
+import pitchDeckRoutes from './pitchDeck.routes.js';
 import digitalTwinRoutes from './digitalTwin.routes.js';
+import marketResearchRoutes from './marketResearch.routes.js';
+import chatRoutes from './chat.routes.js';
 
 const router = express.Router();
 
+// Require auth for all project routes
 router.use(requireAuth);
 
+// Core Project CRUD
 router.get('/', getProjects);
 router.get('/:id', getProjectById);
 router.post('/', validateRequest(createProjectSchema), createProject);
 router.put('/:id', validateRequest(updateProjectSchema), updateProject);
 router.delete('/:id', deleteProject);
 
-// Digital Twin routes
+// Project Overview (attached directly to project)
+
+// Mount Sub-Modules
+router.use('/:projectId/pitch-deck', pitchDeckRoutes);
 router.use('/:projectId/digital-twin', digitalTwinRoutes);
+router.use('/:projectId/market-research', marketResearchRoutes);
+router.use('/:projectId/chat', chatRoutes);
 
 export default router;

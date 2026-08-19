@@ -9,18 +9,17 @@ import ErrorBoundary from './components/ui/ErrorBoundary';
 
 import AppLayout from './layouts/AppLayout';
 import Landing from './pages/Landing/Landing';
-
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import ResetPassword from './pages/Auth/ResetPassword';
-
+import Dashboard from './pages/Dashboard/Dashboard';
 import Projects from './pages/Projects/Projects';
-import ProjectWorkspace from './pages/ProjectWorkspace/ProjectWorkspace';
-
+import Settings from './pages/Settings/Settings';
+import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
 import PitchDeckPage from './pages/PitchDeck/PitchDeckPage';
-import DigitalTwinPage from './pages/DigitalTwin/DigitalTwin';
-import MarketResearchPage from './pages/MarketResearch/MarketResearchPages';
+import DigitalTwinPage from './pages/DigitalTwin/DigitalTwinPage';
+import MarketResearchPage from './pages/MarketResearch/MarketResearchPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,69 +35,38 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-
-              {/* Public Routes */}
-              <Route element={<PublicRoute />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route
-                  path="/auth"
-                  element={<Navigate to="/login" replace />}
-                />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/auth" element={<Navigate to="/login" replace />} />
+            </Route>
+            
+            <Route path="/" element={<Landing />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
+              
+              <Route path="/projects/:projectId" element={<WorkspaceLayout />}>
 
-              <Route path="/" element={<Landing />} />
-
-              {/* Protected Routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route element={<AppLayout />}>
-
-                  <Route path="/projects" element={<Projects />} />
-
-                </Route>
-
-                {/* Project Workspace */}
-                <Route
-                  path="/projects/:projectId"
-                  element={<ProjectWorkspace />}
-                />
-
-                {/* Pitch Deck */}
-                <Route
-                  path="/projects/:projectId/pitch-deck"
-                  element={<PitchDeckPage />}
-                />
-
-                {/* Digital Twin */}
-                <Route
-                  path="/projects/:projectId/digital-twin"
-                  element={<DigitalTwinPage />}
-                />
-
-                {/* AI Market Research */}
-                <Route
-                  path="/projects/:projectId/market-research"
-                  element={<MarketResearchPage />}
-                />
+                <Route path="pitch-deck" element={<PitchDeckPage />} />
+                <Route path="digital-twin" element={<DigitalTwinPage />} />
+                <Route path="market-research" element={<MarketResearchPage />} />
               </Route>
-
-              {/* Fallback */}
-              <Route
-                path="*"
-                element={<Navigate to="/" replace />}
-              />
-
-            </Routes>
-          </BrowserRouter>
-
-          <Toaster theme="system" />
-        </AuthProvider>
-      </QueryClientProvider>
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster theme="system" />
+      </AuthProvider>
+    </QueryClientProvider>
     </ErrorBoundary>
   );
 }
