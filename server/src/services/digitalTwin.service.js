@@ -1,7 +1,7 @@
 import prisma from '../lib/prisma.js';
 import { generateText, fetchFromAIWithRetry } from './ai.service.js';
 import { digitalTwinPrompt, askDigitalTwinQuestionPrompt } from '../prompts/digitalTwin.prompt.js';
-import { digitalTwinGenerationSchema } from '../validations/digitalTwin.validation.js';
+import { digitalTwinGenerationSchema } from '../validations/digitalTwin.validations.js';
 
 const DEFAULT_ASSUMPTIONS = {
   startingCustomers: 100,
