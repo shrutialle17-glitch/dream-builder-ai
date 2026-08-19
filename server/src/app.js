@@ -5,9 +5,13 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+
 import { errorHandler } from './middleware/errorHandler.js';
+
 import projectRoutes from './routes/project.routes.js';
 import digitalTwinRoutes from './routes/digitalTwin.routes.js';
+import pitchDeckRoutes from './routes/pitchDeck.routes.js';
+import marketResearchRoutes from './routes/marketResearch.routes.js';
 
 dotenv.config();
 
@@ -39,7 +43,21 @@ app.use(morgan('dev'));
 
 // API Routes
 app.use('/api/v1/projects', projectRoutes);
-app.use('/api/v1/projects/:projectId/digital-twin', digitalTwinRoutes);
+
+app.use(
+  '/api/v1/projects/:projectId/digital-twin',
+  digitalTwinRoutes
+);
+
+app.use(
+  '/api/v1/projects/:projectId/pitch-decks',
+  pitchDeckRoutes
+);
+
+app.use(
+  '/api/v1/projects/:projectId/market-research',
+  marketResearchRoutes
+);
 
 // 404 handler
 app.use((req, res, next) => {
