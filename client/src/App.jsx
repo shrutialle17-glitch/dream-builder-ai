@@ -19,6 +19,7 @@ import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
 import StartupWorkspace from './pages/Workspace/StartupWorkspace';
 import BusinessPlanPage from './pages/BusinessPlan/BusinessPlanPage';
 import BrandingPage from './pages/Branding/BrandingPage';
+import MVPPlannerPage from './pages/MVPPlanner/MVPPlannerPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +62,7 @@ function App() {
                   <Route index element={<StartupWorkspace />} />
                   <Route path="business-plan" element={<BusinessPlanPage />} />
                   <Route path="branding" element={<BrandingPage />} />
+                  <Route path="mvp" element={<MVPPlannerPage />} />
                 </Route>
               </Route>
             </Routes>
