@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MessageSquare, Sparkles, Send, User, Trash2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { useChatHistory } from '../../hooks/useChat';
+import { useChatHistory, chatKeys } from '../../hooks/useChat';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { clearChatHistory } from '../../services/project.api';
 import ConfirmDialog from './ConfirmDialog';
@@ -32,7 +32,11 @@ const ModuleChat = ({
     mutationFn: () => clearChatHistory(projectId, moduleType),
     onSuccess: () => {
       setChatHistory([]);
-      queryClient.invalidateQueries(['chat-history', projectId, moduleType]);
+      try {
+        queryClient.setQueryData(chatKeys.list(projectId, moduleType), []);
+      } catch (e) {
+        queryClient.invalidateQueries(chatKeys.list(projectId, moduleType));
+      }
       setIsClearModalOpen(false);
     },
   });
@@ -58,7 +62,29 @@ const ModuleChat = ({
 
     askQuestion(textToSubmit, {
       onSuccess: (answer) => {
+        // Update local UI
         setChatHistory(prev => [...prev, { role: 'ai', content: answer }]);
+
+        // Keep react-query cache in sync so history is available after navigation
+        try {
+          queryClient.setQueryData(chatKeys.list(projectId, moduleType), (old) => {
+            const existing = Array.isArray(old) ? old.slice() : [];
+            const last = existing[existing.length - 1];
+
+            if (!last || last.content !== textToSubmit || last.role !== 'user') {
+              existing.push({ role: 'user', content: textToSubmit });
+            }
+
+            const lastAfter = existing[existing.length - 1];
+            if (!lastAfter || lastAfter.content !== answer || lastAfter.role !== 'ai') {
+              existing.push({ role: 'ai', content: answer });
+            }
+
+            return existing;
+          });
+        } catch (e) {
+          queryClient.invalidateQueries(chatKeys.list(projectId, moduleType));
+        }
       },
       onError: () => {
         setChatHistory(prev => [...prev, { role: 'ai', content: "I'm sorry, I encountered an error processing your request." }]);

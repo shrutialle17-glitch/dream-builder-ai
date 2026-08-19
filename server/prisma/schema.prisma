@@ -295,3 +295,26 @@ model MarketResearch {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+model Document {
+  id        String          @id @default(uuid())
+  title     String
+  sourceUrl String?
+  category  String?
+  createdAt DateTime        @default(now())
+  chunks    DocumentChunk[]
+}
+
+model DocumentChunk {
+  id         String   @id @default(uuid())
+  documentId String
+  content    String
+  page       Int?
+  
+  // Notice we use Unsupported for the pgvector type
+  embedding  Unsupported("vector(768)")?
+  
+  createdAt  DateTime @default(now())
+
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}

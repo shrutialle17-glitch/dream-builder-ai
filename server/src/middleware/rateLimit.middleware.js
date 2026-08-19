@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const aiGenerateLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
@@ -10,5 +10,8 @@ export const aiGenerateLimiter = rateLimit({
     code: 'TOO_MANY_REQUESTS',
     message: 'Too many generation requests. Please wait a moment and try again.'
   },
-  keyGenerator: (req) => req.user?.id || req.ip
+  keyGenerator: (req) => {
+    if (req.user?.id) return req.user.id;
+    return ipKeyGenerator(req);
+  }
 });
