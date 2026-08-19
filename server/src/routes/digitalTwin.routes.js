@@ -5,8 +5,21 @@ import { aiGenerateLimiter } from '../middleware/rateLimit.middleware.js';
 const router = express.Router({ mergeParams: true });
 
 router.get('/', digitalTwinController.getProjectDigitalTwin);
-router.post('/simulate', digitalTwinController.runProjectSimulation);
-router.post('/insights', aiGenerateLimiter, digitalTwinController.getProjectInsights);
-router.post('/ask', digitalTwinController.askDigitalTwinQuestion);
+
+router.post(
+  '/simulate',
+  digitalTwinController.runProjectSimulation
+);
+
+router.post(
+  '/insights',
+  aiGenerateLimiter,
+  digitalTwinController.getProjectInsights
+);
+
+router.post(
+  '/ask',
+  digitalTwinController.askDigitalTwinQuestion
+);
 
 export default router;
