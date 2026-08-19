@@ -73,7 +73,7 @@ export const regenerateStartupDNA = async (projectId) => {
 
 export const askDNAQuestion = async (projectId, question) => {
   const { data } = await api.post(`/projects/${projectId}/startup-dna/ask`, { question });
-  return data.answer;
+  return data.answer || data.data?.answer;
 };
 
 // Chat History
@@ -110,7 +110,7 @@ export const deleteBusinessPlan = async (projectId) => {
 
 export const askBusinessPlanQuestion = async (projectId, question) => {
   const { data } = await api.post(`/projects/${projectId}/business-plan/ask`, { question });
-  return data.answer;
+  return data.answer || data.data?.answer;
 };
 
 // MVP Planner
@@ -136,7 +136,7 @@ export const deleteMVPPlan = async (projectId) => {
 
 export const askMVPQuestion = async (projectId, question) => {
   const { data } = await api.post(`/projects/${projectId}/mvp/ask`, { question });
-  return data.answer;
+  return data.answer || data.data?.answer;
 };
 
 // Branding
@@ -162,7 +162,7 @@ export const deleteBranding = async (projectId) => {
 
 export const askBrandingQuestion = async (projectId, question) => {
   const { data } = await api.post(`/projects/${projectId}/branding/ask`, { question });
-  return data.data.answer;
+  return data.answer || data.data?.answer;
 };
 
 // Pitch Deck
@@ -188,7 +188,7 @@ export const deletePitchDeck = async (projectId) => {
 
 export const askPitchDeckQuestion = async (projectId, question) => {
   const { data } = await api.post(`/projects/${projectId}/pitch-deck/ask`, { question });
-  return data.answer;
+  return data.answer || data.data?.answer;
 };
 
 // Digital Twin
@@ -209,7 +209,7 @@ export const generateDigitalTwinInsights = async (projectId, scenarioKey = 'base
 
 export const askDigitalTwinQuestion = async (projectId, question) => {
   const { data } = await api.post(`/projects/${projectId}/digital-twin/ask`, { question });
-  return data.data.answer;
+  return data.answer || data.data?.answer;
 };
 
 // Market Research
@@ -232,3 +232,9 @@ export const deleteMarketResearch = async (projectId) => {
   const { data } = await api.delete(`/projects/${projectId}/market-research`);
   return data;
 };
+
+export const askMarketQuestion = async (projectId, question) => {
+  const { data } = await api.post(`/projects/${projectId}/market-research/ask`, { question });
+  return data.answer || data.data?.answer;
+};
+

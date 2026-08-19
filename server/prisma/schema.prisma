@@ -50,17 +50,16 @@ model Project {
 }
 
 model ActivityLog {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action      String   // e.g., "PROJECT_CREATED", "PROJECT_UPDATED", "LOGGED_IN"
-  entityType  String?  // e.g., "PROJECT"
-  entityId    String?  // e.g., projectId
-  details     String?  // extra info, maybe stringified JSON or plain text
-  createdAt   DateTime @default(now())
-  
-  // Optional relations for tight coupling, but loose entityId is often better for generic logs
-  project     Project? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action     String
+  entityType String?
+  entityId   String?
+  details    String?
+  createdAt  DateTime  @default(now())
+
+  project    Project?  @relation(fields: [entityId], references: [id], onDelete: Cascade)
 }
 
 model StartupOverview {

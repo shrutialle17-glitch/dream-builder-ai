@@ -11,19 +11,22 @@ import AppLayout from "./layouts/AppLayout";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
-import ForgotPassword from './pages/Auth/ForgotPassword';
-import ResetPassword from './pages/Auth/ResetPassword';
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Settings from "./pages/Settings/Settings";
 import Projects from "./pages/Projects/Projects";
 
-import WorkspaceLayout from './pages/Workspace/WorkspaceLayout';
-import StartupWorkspace from './pages/Workspace/StartupWorkspace';
-import IdeaValidationPage from './pages/IdeaValidation/IdeaValidationPage';
+import WorkspaceLayout from "./pages/Workspace/WorkspaceLayout";
+import StartupWorkspace from "./pages/Workspace/StartupWorkspace";
+import IdeaValidationPage from "./pages/IdeaValidation/IdeaValidationPage";
 import StartupDNAPage from "./pages/StartupDNA/StartupDNAPage";
-import BusinessPlanPage from './pages/BusinessPlan/BusinessPlanPage';
-import BrandingPage from './pages/Branding/BrandingPage';
-import MVPPlannerPage from './pages/MVPPlanner/MVPPlannerPage';
+import BusinessPlanPage from "./pages/BusinessPlan/BusinessPlanPage";
+import BrandingPage from "./pages/Branding/BrandingPage";
+import MVPPlannerPage from "./pages/MVPPlanner/MVPPlannerPage";
+import PitchDeckPage from "./pages/PitchDeck/PitchDeckPage";
+import DigitalTwinPage from "./pages/DigitalTwin/DigitalTwinPage";
+import MarketResearchPage from "./pages/MarketResearch/MarketResearchPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +74,12 @@ function App() {
                   <Route path="business-plan" element={<BusinessPlanPage />} />
                   <Route path="branding" element={<BrandingPage />} />
                   <Route path="mvp" element={<MVPPlannerPage />} />
+                  <Route path="pitch-deck" element={<PitchDeckPage />} />
+                  <Route path="digital-twin" element={<DigitalTwinPage />} />
+                  <Route
+                    path="market-research"
+                    element={<MarketResearchPage />}
+                  />
                 </Route>
               </Route>
             </Routes>
