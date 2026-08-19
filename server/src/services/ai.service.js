@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 let genAI = null;
 
@@ -7,37 +7,40 @@ const getGenAI = () => {
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('GEMINI_API_KEY is not configured');
     }
-    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   }
   return genAI;
 };
 
 export const generateText = async (prompt, options = {}) => {
-  const client = getGenAI();
-  const model = client.getGenerativeModel({ model: options.model || 'gemini-3.1-flash-lite' });
+  const ai = getGenAI();
   
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  const result = await ai.models.generateContent({
+    model: options.model || 'gemini-3.1-flash-lite',
+    contents: prompt,
+  });
+  
+  return result.text;
 };
 
 export const generateJSON = async (prompt, schema, options = {}) => {
-  const client = getGenAI();
+  const ai = getGenAI();
   
-  const generationConfig = {
+  const config = {
     responseMimeType: 'application/json',
   };
   
   if (schema) {
-    generationConfig.responseSchema = schema;
+    config.responseSchema = schema;
   }
   
-  const model = client.getGenerativeModel({ 
+  const result = await ai.models.generateContent({ 
     model: options.model || 'gemini-3.1-flash-lite',
-    generationConfig
+    contents: prompt,
+    config
   });
   
-  const result = await model.generateContent(prompt);
-  let text = result.response.text();
+  let text = result.text;
   
   // Clean markdown json blocks if present
   text = text.replace(/```json\s?/g, '').replace(/```\s?$/g, '').trim();
