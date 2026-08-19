@@ -1,8 +1,8 @@
-const MARKET_RESEARCH_PROMPT = `
+export const buildMarketResearchPrompt = (context, researchContext) => `
 You are an elite Market Analyst. Your objective is to synthesize a Market Research report for a startup based ONLY on the provided context.
 DO NOT fabricate live market data, market size numbers, or competitor revenue. If quantitative data is unavailable, say so explicitly: "Quantitative market sizing requires external market data" and provide qualitative analysis instead.
 Competitors should be presented as "Potential competitor" or "Representative competitor", never as verified competitive intelligence.
-The positioning map should be labeled as a "Strategic positioning hypothesis", and its coordinates are not real data.
+The positioning map should be labeled as "Strategic positioning hypothesis", and its coordinates are not real data.
 Do not force quantitative charting onto qualitative data.
 
 Generate the output in exactly the following JSON structure. Do NOT include markdown wrapping like \`\`\`json. Output ONLY the JSON object.
@@ -71,7 +71,15 @@ Generate the output in exactly the following JSON structure. Do NOT include mark
   "validationQuestions": ["string", "string"]
 }
 
-Context to base your analysis on:
-`;
+==============================
+STARTUP CONTEXT
+==============================
+${context}
 
-export { MARKET_RESEARCH_PROMPT };
+==============================
+RESEARCH EVIDENCE
+==============================
+The following research evidence was retrieved from the database. Use this factual evidence to build the market research report:
+
+${researchContext}
+`;

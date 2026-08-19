@@ -1,7 +1,9 @@
 import prisma from '../lib/prisma.js';
 import { generateText, fetchFromAIWithRetry } from './ai.service.js';
-import { MARKET_RESEARCH_PROMPT } from '../prompts/marketResearch.prompt.js';
+import { buildMarketResearchPrompt } from '../prompts/marketResearch.prompt.js';
 import { marketResearchGenerationSchema } from '../validations/marketResearch.validation.js';
+import { runRAG } from '../../rag/ragService.js';
+
 
 /**
  * Gathers existing context about the startup to inform the Market Research.
@@ -61,7 +63,35 @@ const buildMarketResearchContext = async (projectId) => {
 
 const generateMarketResearch = async (projectId) => {
   const context = await buildMarketResearchContext(projectId);
-  const prompt = `${MARKET_RESEARCH_PROMPT}\n\n${context}`;
+
+  // We must fetch the project so runRAG has the correct variables
+  const project = await prisma.project.findUnique({
+    where: { id: projectId }
+  });
+
+  if (!project) throw new Error('Project not found');
+
+  const researchQueries = [
+    `What are the current market trends, size, and growth projections for this industry?`,
+    `Who are the main competitors and what are the major gaps in the market?`,
+    `What are the demographics, psychographics, and pain points of the target audience?`
+  ];
+
+  const researchResults = [];
+  for (const researchQuery of researchQueries) {
+    const result = await runRAG({
+      query: `Startup idea: ${project.description}\nIndustry: ${project.industry}\nResearch question: ${researchQuery}`,
+      topK: 5
+    });
+    researchResults.push(result);
+  }
+
+  const researchContext = researchResults
+    .map((result, i) => `RESEARCH AREA ${i + 1}\n\n${result.context || result.answer}`)
+    .join(`\n========================================\n`);
+
+  // We append BOTH the startup context and the RAG research evidence
+  const prompt = buildMarketResearchPrompt(context, researchContext);
 
   const rawParsedData = await fetchFromAIWithRetry(prompt);
   const parsedData = marketResearchGenerationSchema.parse(rawParsedData);
@@ -121,19 +151,69 @@ const askQuestion = async (projectId, question, userId) => {
     }
   });
 
+  const project = await prisma.project.findUnique({
+    where: { id: projectId }
+  });
+
+  if (!project) {
+    throw new Error('Project context is missing.');
+  }
+
   const report = await getMarketResearch(projectId);
   let context = "Startup has no market research report yet.";
   if (report) {
     context = JSON.stringify(report, null, 2);
   }
 
+  // -----------------------------------------
+  // Retrieve relevant research using RAG
+  // -----------------------------------------
+
+  console.log('\n========================================');
+  console.log('RAG MARKET RESEARCH CHAT SEARCH');
+  console.log('========================================');
+  console.log('Question:', question);
+
+  const ragResult = await runRAG({
+    query: `
+      Startup idea:
+      ${project.description}
+
+      Industry:
+      ${project.industry}
+
+      Startup stage:
+      ${project.startupStage}
+
+      Founder question:
+      ${question}
+    `,
+    topK: 5
+  });
+
+  const researchContext = ragResult?.context || ragResult?.answer || '';
+  console.log('RAG research retrieved successfully.');
+
   const prompt = `You are a Market Analyst expert advising a startup founder.
+
+==============================
+STARTUP CONTEXT
+==============================
 Here is their current market research report context:
 ${context}
 
+==============================
+RESEARCH EVIDENCE
+==============================
+The following research evidence was retrieved from the database to help answer the question:
+${researchContext}
+
+==============================
+FOUNDER QUESTION
+==============================
 The founder asks: "${question}"
 
-Provide a concise, insightful, and strategic answer. Do not use markdown wrapping like \`\`\`json.`;
+Provide a concise, insightful, and strategic answer based on the provided context and research evidence. Do not use generic filler.`;
 
   const answer = await generateText(prompt, { temperature: 0.7 });
 
