@@ -287,6 +287,7 @@ async function main() {
     .sort();*/
 
   const files = [
+    "startup_research.pdf",
     "Compendium-of-Best-Practices-15-01-26.pdf",
     "daignostucs.pdf",
     "IndiaInnovationReport2020Book.pdf",

@@ -297,24 +297,32 @@ model MarketResearch {
 }
 
 model Document {
-  id        String          @id @default(uuid())
-  title     String
-  sourceUrl String?
-  category  String?
-  createdAt DateTime        @default(now())
-  chunks    DocumentChunk[]
+  id              String   @id @default(uuid())
+  title           String
+  source          String?
+  url             String?
+  category        String?
+  industry        String?
+  country         String?
+  publicationYear Int?
+  fileName        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  chunks DocumentChunk[]
 }
 
 model DocumentChunk {
-  id         String   @id @default(uuid())
+  id         String                     @id @default(uuid())
   documentId String
-  content    String
-  page       Int?
-  
-  // Notice we use Unsupported for the pgvector type
-  embedding  Unsupported("vector(768)")?
-  
-  createdAt  DateTime @default(now())
+  content    String                     @db.Text
+  chunkIndex Int
+  pageNumber Int?
+  embedding  Unsupported("vector(768)")
+  createdAt  DateTime                   @default(now())
 
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
 }
+
